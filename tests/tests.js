@@ -2,7 +2,7 @@
  * @Date: 2011-05-02 09:43:09
  * @Author: Yao guan shou
  * @LastEditors: Yao guan shou
- * @LastEditTime: 2022-03-07 11:29:59
+ * @LastEditTime: 2022-03-09 15:02:50
  * @FilePath: /operational-transformation/tests/tests.js
  * @Description:
  */
@@ -12,7 +12,6 @@ var { apply } = require("../apply");
 
 var numTests = 0;
 var failed = 0;
-
 function test(
   original, // 旧的文本，服务器文本
   a, // 文本a

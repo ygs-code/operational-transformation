@@ -75,10 +75,7 @@ function toArray() {
 }
 
 //连接上一个和下一个对象
-function cons(
-    car, 
-    cdr
-    ) {
+function cons(car, cdr) {
   return {
     car: car, //返回 return    "i" + chars;    "d" + chars;   "r" + chars;
     cdr: cdr, // 获取上一个table缓存的数据 把他变成一个链表连接起来
@@ -100,6 +97,8 @@ function put(table, x, y, edits) {
 
 // 获取table数据
 function get(table, x, y) {
+  // console.log('x===',x)
+  // console.log('y===', y)
   var edits = table[String(x) + "," + String(y)];
   if (edits) {
     return edits;
@@ -120,17 +119,20 @@ function makeEditsTable(
     j;
 
   put(table, 0, 0, theEmptyList);
-  console.log("new==", t);
+  // console.log("new==", t);
   // 新的文本字符串的长度
 
   for (i = 1; i <= m; i += 1) {
-    console.log("insert(t.charAt(i - 1)=", insert(t.charAt(i - 1)));
-    console.log("get(table, i - 1, 0)=", get(table, i - 1, 0));
-    console.log("cons=",    cons(
-        // return "i" + chars;  从第0个开始
-        insert(t.charAt(i - 1)), //返回 return "i" + chars;  从第0个开始
-        get(table, i - 1, 0) // 获取上一个table缓存的数据
-      ));
+    // console.log("insert(t.charAt(i - 1)=", insert(t.charAt(i - 1)));
+    // console.log("get(table, i - 1, 0)=", get(table, i - 1, 0));
+    // console.log(
+    //   "cons=",
+    //   cons(
+    //     // return "i" + chars;  从第0个开始
+    //     insert(t.charAt(i - 1)), //返回 return "i" + chars;  从第0个开始
+    //     get(table, i - 1, 0) // 获取上一个table缓存的数据
+    //   )
+    // );
     put(
       table, // 把字符串缓存成对象数组
       i, // 索引
@@ -145,13 +147,16 @@ function makeEditsTable(
   console.log(" odd ==", s);
   // 旧的文本，服务器文本字符串的长度
   for (j = 1; j <= n; j += 1) {
-    console.log("del(t.charAt(j - 1)=", del(s.charAt(j - 1)));
-    console.log("get(table, 0, j=", get(table, 0, j - 1));
-    console.log("cons=",    cons(
-        // return "i" + chars;  从第0个开始
-        del(s.charAt(j - 1)), // 返回 return "d" + chars;  从第0个开始
-        get(table, 0, j - 1) // 获取上一个table缓存的数据
-      ));
+    // console.log("del(t.charAt(j - 1)=", del(s.charAt(j - 1)));
+    // console.log("get(table, 0, j=", get(table, 0, j - 1));
+    // console.log(
+    //   "cons=",
+    //   cons(
+    //     // return "i" + chars;  从第0个开始
+    //     del(s.charAt(j - 1)), // 返回 return "d" + chars;  从第0个开始
+    //     get(table, 0, j - 1) // 获取上一个table缓存的数据
+    //   )
+    // );
     put(
       table, // 把字符串缓存成对象数组
       0, //
@@ -162,35 +167,64 @@ function makeEditsTable(
       )
     );
   }
-  console.log('table========',table)
-  // 返回链表 
+  // console.log("table========", table);
+  // 返回链表
   return table;
 }
 
-// 
+//选择单元格
 function chooseCell(
-    table, // 链表
-    x,  //
-    y, // 
-    k // 回调函数
-    ) {
-   // 获取上一次编辑     
-  var prevEdits = get(table, x, y - 1),
+  table, // 链表
+  x, //   新的文本字符串指针
+  y, //  旧的文本字符串指针
+  k // 回调函数
+) {
+  // 获取上一次编辑
+  var prevEdits = get(
+      table,
+      x, //   新的文本字符串指针
+      y - 1 //  旧的文本字符串指针
+    ),
     min = prevEdits.length,
     direction = "up";
-   console.log('prevEdits=',prevEdits)
-  if (get(table, x - 1, y).length < min) {
-    prevEdits = get(table, x - 1, y);
+
+  console.log("table=", table);
+  console.log("x=", x, "y-1=", y - 1);
+  console.log("x-1=", x, "y=", y );
+  console.log("prevEdits=", prevEdits);
+  debugger
+  if (
+    get(
+      table,
+      x - 1, //   新的文本字符串指针
+      y //  旧的文本字符串指针
+    ).length < min
+  ) {
+    prevEdits = get(
+      table,
+      x - 1, //   新的文本字符串指针
+      y //  旧的文本字符串指针
+    );
     min = prevEdits.length;
     direction = "left";
   }
 
-  if (get(table, x - 1, y - 1).length < min) {
-    prevEdits = get(table, x - 1, y - 1);
+  if (
+    get(
+      table,
+      x - 1, //   新的文本字符串指针
+      y - 1 //  旧的文本字符串指针
+    ).length < min
+  ) {
+    prevEdits = get(
+      table,
+      x - 1, //   新的文本字符串指针
+      y - 1 //  旧的文本字符串指针
+    );
     min = prevEdits.length;
     direction = "diagonal";
   }
-
+  // console.log()
   return k(direction, prevEdits);
 }
 
@@ -210,36 +244,51 @@ exports.operations = {
         s, // 旧的文本，服务器文本
         t // 新的文本
       );
+    // console.log("edits makeEditsTable=======", edits);
+    // console.log("m=======", m);
+    // console.log("n=======", n);
     //   两层嵌套 时间复杂度为 o(n^2)  空间复杂度为 o(2*long)
     for (i = 1; i <= m; i += 1) {
+      // 旧的字符串"at"
       for (j = 1; j <= n; j += 1) {
-        chooseCell(edits, i, j, function (direction, prevEdits) {
-          switch (direction) {
-            case "left":
-              put(edits, i, j, cons(insert(t.charAt(i - 1)), prevEdits));
-              break;
-            case "up":
-              put(edits, i, j, cons(del(s.charAt(j - 1)), prevEdits));
-              break;
-            case "diagonal":
-              if (s.charAt(j - 1) === t.charAt(i - 1)) {
-                put(edits, i, j, cons(retain(1), prevEdits));
-              } else {
-                put(
-                  edits,
-                  i,
-                  j,
-                  cons(
-                    insert(t.charAt(i - 1)),
-                    cons(del(s.charAt(j - 1)), prevEdits)
-                  )
-                );
-              }
-              break;
-            default:
-              throw new TypeError("Unknown direction.");
+        // console.log('i=',i)
+        // console.log('j=',j)
+        // 新的字符串"at"
+
+        //
+        chooseCell(
+          edits,
+          i, // 旧的字符串索引
+          j, // 新的字符串索引
+          function (direction, prevEdits) {
+            // 在插入新的字符串
+            switch (direction) {
+              case "left":
+                put(edits, i, j, cons(insert(t.charAt(i - 1)), prevEdits));
+                break;
+              case "up":
+                put(edits, i, j, cons(del(s.charAt(j - 1)), prevEdits));
+                break;
+              case "diagonal":
+                if (s.charAt(j - 1) === t.charAt(i - 1)) {
+                  put(edits, i, j, cons(retain(1), prevEdits));
+                } else {
+                  put(
+                    edits,
+                    i,
+                    j,
+                    cons(
+                      insert(t.charAt(i - 1)),
+                      cons(del(s.charAt(j - 1)), prevEdits)
+                    )
+                  );
+                }
+                break;
+              default:
+                throw new TypeError("Unknown direction.");
+            }
           }
-        });
+        );
       }
     }
 

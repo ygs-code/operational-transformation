@@ -2,7 +2,7 @@
  * @Date: 2011-05-02 09:43:09
  * @Author: Yao guan shou
  * @LastEditors: Yao guan shou
- * @LastEditTime: 2022-03-04 13:28:12
+ * @LastEditTime: 2022-03-09 15:08:15
  * @FilePath: /operational-transformation/apply.js
  * @Description:
  */
@@ -48,3 +48,4 @@ exports.apply = function (op, doc) {
   }
   return newDoc;
 };
+
