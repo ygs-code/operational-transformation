@@ -2,7 +2,7 @@
  * @Date: 2022-03-09 15:11:33
  * @Author: Yao guan shou
  * @LastEditors: Yao guan shou
- * @LastEditTime: 2022-03-09 17:39:20
+ * @LastEditTime: 2022-03-09 17:49:05
  * @FilePath: /operational-transformation/cdn_ot.js
  * @Description:
  */
@@ -585,6 +585,7 @@ function xform(operationA, operationB, k) {
     editA = operationA[indexA];
     editB = operationB[indexB];
     xformer = xformTable[join(operations.type(editA), operations.type(editB))];
+    console.log('xformer=',xformer)
     if (xformer) {
       xformer(editA, editB, indexA, indexB, kk);
     } else {
@@ -624,7 +625,7 @@ function test(
     a // 新的文本
   );
   console.log('operationsA=',operationsA)
-  return;
+//   return;
   var operationsB = operations.operation(
     original, // 旧的文本，服务器文本
     b // 新的文本
