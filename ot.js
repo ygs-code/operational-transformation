@@ -11,76 +11,98 @@
   laxbreak: true */
 
 /*global define */
-var events = require("events");
-var { messages } = require("./messages");
-var { apply } = require("./apply");
-var { errors } = require("./errors");
+// var events = require("events");
+// var { messages } = require("./messages");
+// var { apply } = require("./apply");
+// var { errors } = require("./errors");
 
-function nop() {}
+(function (global, factory) {
+  typeof exports === "object" && typeof module !== "undefined"
+    ? (module.exports = factory(
+        require("events"),
+        require("./messages"),
+        require("./apply"),
+        require("./errors")
+      ))
+    : typeof define === "function" && define.amd
+    ? define("ot", ["events", "messages", "apply", "errors"], factory)
+    : (global.ot = factory(
+        global.events,
+        global.messages,
+        global.apply,
+        global.errors
+      ));
+})(this, function (events, messages, apply, errors) {
+  "use strict";
 
-function error(msg) {
-  throw new Error(msg);
-}
+  function nop() {}
 
-exports.ot = function (opts) {
-  var store = opts.store || error("store is required"),
-    manager = new events.EventEmitter();
+  function error(msg) {
+    throw new Error(msg);
+  }
 
-  manager.newDocument = function (callback) {
-    callback = callback || nop;
-    store.newDocument(
-      function (err, doc) {
-        if (err) {
-          this.emit("error", err);
-          return callback(err, null);
-        } else {
-          this.emit("new", doc);
-          return callback(null, doc);
-        }
-      }.bind(this)
-    );
-  };
+  // exports.ot =
 
-  manager.applyOperation = function (message) {
-    var id = messages.id(message),
-      newRev = messages.revision(message),
-      op = messages.operation(message),
-      emit = this.emit.bind(this);
+  return function (opts) {
+    var store = opts.store || error("store is required"),
+      manager = new events.EventEmitter();
 
-    store.getDocument(id, function (err, doc) {
-      if (err) {
-        emit("error", err);
-      } else {
-        if (newRev === doc.rev + 1) {
-          try {
-            doc.doc = apply(op, doc.doc);
-          } catch (e) {
-            emit("error", e);
-            return;
+    manager.newDocument = function (callback) {
+      callback = callback || nop;
+      store.newDocument(
+        function (err, doc) {
+          if (err) {
+            this.emit("error", err);
+            return callback(err, null);
+          } else {
+            this.emit("new", doc);
+            return callback(null, doc);
           }
+        }.bind(this)
+      );
+    };
 
-          doc.rev++;
-          store.saveDocument(doc, function (err, doc) {
-            var msg;
-            if (err) {
-              // Bad revisions aren't considered an error at this
-              // level, just ignored.
-              if (!(err instanceof errors.BadRevision)) {
-                emit("error", err);
-              }
-            } else {
-              msg = {};
-              messages.revision(msg, doc.rev);
-              messages.id(msg, doc.id);
-              messages.operation(msg, op);
-              messages.document(msg, doc.doc);
-              emit("update", msg);
+    manager.applyOperation = function (message) {
+      var id = messages.id(message),
+        newRev = messages.revision(message),
+        op = messages.operation(message),
+        emit = this.emit.bind(this);
+
+      store.getDocument(id, function (err, doc) {
+        if (err) {
+          emit("error", err);
+        } else {
+          if (newRev === doc.rev + 1) {
+            try {
+              doc.doc = apply(op, doc.doc);
+            } catch (e) {
+              emit("error", e);
+              return;
             }
-          });
-        }
-      }
-    });
-  };
 
-  return manager;
-};
+            doc.rev++;
+            store.saveDocument(doc, function (err, doc) {
+              var msg;
+              if (err) {
+                // Bad revisions aren't considered an error at this
+                // level, just ignored.
+                if (!(err instanceof errors.BadRevision)) {
+                  emit("error", err);
+                }
+              } else {
+                msg = {};
+                messages.revision(msg, doc.rev);
+                messages.id(msg, doc.id);
+                messages.operation(msg, op);
+                messages.document(msg, doc.doc);
+                emit("update", msg);
+              }
+            });
+          }
+        }
+      });
+    };
+
+    return manager;
+  };
+});

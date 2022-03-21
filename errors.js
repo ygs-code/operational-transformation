@@ -2,7 +2,7 @@
  * @Date: 2011-05-02 09:43:09
  * @Author: Yao guan shou
  * @LastEditors: Yao guan shou
- * @LastEditTime: 2022-03-04 13:23:16
+ * @LastEditTime: 2022-03-21 15:57:36
  * @FilePath: /operational-transformation/errors.js
  * @Description:
  */
@@ -13,20 +13,33 @@
   laxbreak: true */
 
 /*global define, setTimeout */
-var util = require("util");
 
-var exports = {};
+(function (global, factory) {
+  typeof exports === "object" && typeof module !== "undefined"
+    ? (module.exports = factory(require("util")))
+    : typeof define === "function" && define.amd
+    ? define("errors", ["util"], factory)
+    : (global.errors = factory(
+        (global.util = {
+          inherits: () => {},
+        })
+      ));
+})(this, function (util) {
+  "use strict";
 
-function defineError(name, Parent) {
-  Parent = Parent || Error;
-  exports[name] = function (msg) {
-    Parent.call(this, msg);
-  };
-  util.inherits(exports[name], Parent);
-  exports[name].prototype.name = name;
-}
+  var exports = {};
 
-defineError("BadRevision");
-defineError("NoSuchDocument");
+  function defineError(name, Parent) {
+    Parent = Parent || Error;
+    exports[name] = function (msg) {
+      Parent.call(this, msg);
+    };
+    util.inherits(exports[name], Parent);
+    exports[name].prototype.name = name;
+  }
 
-exports.errors = exports;
+  defineError("BadRevision");
+  defineError("NoSuchDocument");
+
+  return exports;
+});
