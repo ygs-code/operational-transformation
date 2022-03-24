@@ -34,7 +34,7 @@ OT算法全名叫**Operation Transformation**，你看从名字就对应了上�
 
 tests.js，apply.js，client.js，errors.js，messages.js，operations.js，ot.js，xform.js
 
-那么我们来显看看这几个文件功能
+那么我们来显看看这几个文件功能 
 
 ### tests.js测试用例文件
 
