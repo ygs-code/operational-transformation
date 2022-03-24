@@ -47,7 +47,7 @@
     }
   }
 
-  // 如果是保留
+  // 如果是保留则返回数字 获取字符串 从第一个开始去掉前面的
   function val(edit) {
     return type(edit) === "r" ? Number(edit.slice(1)) : edit.slice(1);
   }
@@ -240,6 +240,7 @@
   return {
     // Constructor for operations (which are a stream of edits). Uses
     // variation of Levenshtein Distance.
+    // 通过动态规划算法 获取到 字符串是 保留还是新增还是删除
     operation: function (
       s, // 旧的文本，服务器文本
       t // 新的文本
@@ -297,7 +298,7 @@
                       i,
                       j,
                       cons(
-                        retain(1), //保留 一个占位符
+                        retain(1), //保留字符串比如 xabc , abc     第一个a r1为 2,1
                         prevEdits
                       )
                     );
@@ -329,26 +330,34 @@
           );
         }
       }
-      console.log("edits=================", edits);
+      console.log("edits=================", JSON.stringify(edits));
       console.log("m========", m);
       console.log("n========", n);
+      console.log(
+        "get(edits, m, n).toArray().reverse()========",
+        get(edits, m, n).toArray().reverse()
+      );
       return get(edits, m, n).toArray().reverse(); // 翻转
     },
-
+    // 插入
     insert: insert,
+    // 删除
     del: del,
+    // 保留
     retain: retain,
+    // 判断是否是删除 保留，插入
     type: type,
+    // 判断是否是保留如果是保留 则返回数字 否则返回字符串
     val: val,
-
+    // 判断是否是删除
     isDelete: function (edit) {
       return typeof edit === "object" && type(edit) === "delete";
     },
-
+    // 判断是否保留
     isRetain: function (edit) {
       return typeof edit === "object" && type(edit) === "retain";
     },
-
+    // 判断是否插入
     isInsert: function (edit) {
       return typeof edit === "object" && type(edit) === "insert";
     },

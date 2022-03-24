@@ -2,7 +2,7 @@
  * @Date: 2011-05-02 09:43:09
  * @Author: Yao guan shou
  * @LastEditors: Yao guan shou
- * @LastEditTime: 2022-03-21 16:41:42
+ * @LastEditTime: 2022-03-24 14:33:41
  * @FilePath: /operational-transformation/apply.js
  * @Description:
  */
@@ -14,7 +14,6 @@
   laxbreak: true */
 
 /*global define */
- 
 
 (function (global, factory) {
   typeof exports === "object" && typeof module !== "undefined"
@@ -24,25 +23,47 @@
     : (global.apply = factory(global.operations));
 })(this, function (operations) {
   "use strict";
-  
-  return function (op, doc) {
+
+  return function (
+    op, // op 字符串 数组
+    doc // 旧的文档
+  ) {
     var i,
       len,
       index = 0,
-      newDoc = "";
+      newDoc = ""; // 新的文档
+    console.log("doc==============", doc);
     for (i = 0, len = op.length; i < len; i += 1) {
+      // 判断是否是删除 保留，插入
       switch (operations.type(op[i])) {
         case "retain":
-          newDoc += doc.slice(0, operations.val(op[i]));
-          doc = doc.slice(operations.val(op[i]));
+          // 如果是保留则返回数字 获取字符串 从第一个开始去掉前面的
+          newDoc += doc.slice(
+            0,
+            // 如果是保留则返回数字 获取字符串 从第一个开始去掉前面的
+            operations.val(op[i])
+          );
+
+          doc = doc.slice(
+            // 如果是保留则返回数字 获取字符串 从第一个开始去掉前面的
+            operations.val(op[i])
+          );
+          console.log("doc slice==============", doc);
           break;
         case "insert":
+          // 如果是保留则返回数字 获取字符串 从第一个开始去掉前面的
           newDoc += operations.val(op[i]);
           break;
         case "delete":
-          if (doc.indexOf(operations.val(op[i])) !== 0) {
+          if (
+            doc.indexOf(
+              // 如果是保留则返回数字 获取字符串 从第一个开始去掉前面的
+              operations.val(op[i])
+            ) !== 0
+          ) {
             throw new TypeError(
               "Expected '" +
+                // 如果是保留则返回数字 获取字符串 从第一个开始去掉前面的
                 operations.val(op[i]) +
                 "' to delete, found '" +
                 doc.slice(0, 10) +
@@ -59,5 +80,3 @@
     return newDoc;
   };
 });
-
- 

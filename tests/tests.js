@@ -2,7 +2,7 @@
  * @Date: 2011-05-02 09:43:09
  * @Author: Yao guan shou
  * @LastEditors: Yao guan shou
- * @LastEditTime: 2022-03-21 16:48:43
+ * @LastEditTime: 2022-03-24 14:32:00
  * @FilePath: /operational-transformation/tests/tests.js
  * @Description:
  */
@@ -33,7 +33,7 @@
       original, // 旧的文本，服务器文本
       a // 新的文本
     );
-     return
+    // return;
     var operationsB = ops.operation(
       original, // 旧的文本，服务器文本
       b // 新的文本
@@ -41,19 +41,28 @@
 
     // ot 算法函数
     xform(operationsA, operationsB, function (ap, bp) {
+      // console.log('ap===========',ap)
+      // console.log('bp===========',bp)
       numTests++;
       // try {
       console.log(original + " -< (" + a + ", " + b + ") >- " + expected);
-
+      console.log('operationsA======',operationsA)
+      console.log('original======',original)
+      // 经过冲突解决后生成的新操作可以达到：
       var docA = apply(operationsA, original);
+     
+      // console.log('bp======',bp)
+      console.log('docA======',docA)
       var finalA = apply(bp, docA);
+
       console.log("  " + original + " -> " + docA + " -> " + finalA);
       if (finalA !== expected) {
         throw new Error(finalA + " !== " + expected);
       }
-
+      // 经过冲突解决后生成的新操作可以达到：
       var docB = apply(operationsB, original);
       var finalB = apply(ap, docB);
+
       console.log("  " + original + " -> " + docB + " -> " + finalB);
       if (finalB !== expected) {
         throw new Error(finalB + " !== " + expected);
